@@ -18,6 +18,13 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 builder.Services.AddCors();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddScoped<ILlmService, LlmService>(provider =>
+{
+    var apiKey = builder.Configuration["OpenAI:ApiKey"] ?? throw new Exception("OpenAI API key not found - program.cs");
+    var model = builder.Configuration["OpenAI:Model"] ?? throw new Exception("OpenAI Model not found - program.cs");
+    return new LlmService(apiKey, model);
+});
+
 builder.Services.AddScoped<ITokenServices, TokenService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(option =>
